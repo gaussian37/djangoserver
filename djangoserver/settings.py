@@ -26,7 +26,7 @@ SECRET_KEY = 's+9#n%%u9u51&yzj9&jn_fd4sw_$^+5*1p_)8a()n&x!$xc4xn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'http://gaussian37.pythonanywhere.com/']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com']
 
 
 # Application definition
