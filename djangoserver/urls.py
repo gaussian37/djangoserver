@@ -22,9 +22,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^dining/', include('dining.urls', namespace='dining')),
-    url(r'^ep03_APIview/', include('ep03_APIview.urls', namespace='ep03_APIview')),
-    url(r'^ep08/', include('ep08.urls', namespace='ep08')),
+    url(r'^dining/', include('dining.urls', namespace='dining')),    
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
