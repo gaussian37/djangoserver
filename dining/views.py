@@ -9,9 +9,14 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 
+# Restaurant의 ListView, DetailView 지원
 class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
+
+    # authentication_classes = []
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     # Restaurant DB에서 전체 field를 가져 온다.
     queryset = Restaurant.objects.all()
@@ -29,12 +34,21 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     '''
     def list(self, request, *args, **kwargs):
 
-        # foodCategory 파라미터
-        foodCategory = request.GET.get("foodCategory")
-        # station 파라미터
-        station = request.GET.get("station")
+        # foodCategory 파라미터, 조회 결과 없을 시 None 리턴
+        foodCategory = request.GET.get("foodCategory", None)
+        # station 파라미터, 조회 결과 없을 시 None 리턴
+        station = request.GET.get("station", None)
 
-        # 파라미터가 올바르게 입력 되었는지 확인
+        # 위치 정보(위도 : latitude, 경도 : longitude) 파라미터, 조회 결과 없을 시 None 리턴
+        latitude = request.GET.get("latitude", None)
+        longitude = request.GET.get("longitude", None)
+
+        '''
+        파라미터 상태에 따라 조회 방법 변경
+        1. foodCategory & station 기준으로 조회
+        2. restarurantName? 위도/경도 기준으로 가까운 거리 순으로 리턴
+        '''
+        ## foodCategory와 station 모두 값을 받았을 경우 : foodCategory와 station을 기준으로 조회한 후 결과를 return 한다.
         if foodCategory is not None and station is not None:
             self.queryset = self.queryset.filter(foodCategory=foodCategory, station=station)
         else:
@@ -50,7 +64,11 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     def retrieve(self, request, *args, **kwargs):
         # pk값 가져옴
         pk = self.kwargs['pk']
+        # pk에 해당하는 object를 가져옴
         restaurantObject = Restaurant.objects.get(id=pk)
+
+        # 조회되었을 때 조회수(searchNum)을 1 증가시켜준다.
+        # 의도적인 조회수 증가를 제한하기 위해 throttling을 걸어준다.
         restaurantObject.searchNum += 1
         restaurantObject.save()
 

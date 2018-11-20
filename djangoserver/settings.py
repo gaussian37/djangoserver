@@ -26,10 +26,17 @@ SECRET_KEY = 's+9#n%%u9u51&yzj9&jn_fd4sw_$^+5*1p_)8a()n&x!$xc4xn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com', '70a8f3e9.ngrok.io']
 
 
 # Application definition
+
+
+'''
+rest_framework : django-rest-framework
+rest_framework.authtoken : 
+
+'''
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,9 +45,24 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'django_extensions',
-    'dining',   
+    'django.contrib.sites',         # Multi site 지원
+
+    'rest_framework',               # django-rest-framework 지원
+    'rest_framework.authtoken',     # Token Authorization 타입 지원
+
+    'rest_auth',                    # Allauth 타입 지원
+    'rest_auth.registration',       # Allauth 타입 지원
+
+    'allauth',                      # Allauth 타입 지원
+    'allauth.account',              # Allauth 타입 지원
+    'allauth.socialaccount',        # Allauth 타입 지원
+    'allauth.socialaccount.providers.kakao',  # Allauth 타입 지원
+
+
+    'django_extensions',            # shell_plus 사용 시 추가 기능 지원
+    'accounts',                     # accounts 앱
+    'dining',                       # dining 앱
+    'ep08',                         # test 용도 앱
 ]
 
 MIDDLEWARE = [
@@ -127,5 +149,31 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE':20
+    'PAGE_SIZE':20,
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+         'rest_framework.authentication.BasicAuthentication',
+         'rest_framework.authentication.SessionAuthentication',
+         'rest_framework.authentication.TokenAuthentication',
+         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ],
+     'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '15/m',
+    },
 }
+
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True,
+}
+
+
+SITE_ID = 1 # In django-rest-auth, set the default page. ex) www.example.com
+
+REST_USE_JWT = True # OAuth로 토큰값을 가져올 때,  Token 값이 아닌
