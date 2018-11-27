@@ -29,10 +29,11 @@ api-auth :
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),     # set login format in DRF page. (In upper-right side, you can see the login ID)
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),     # DRF 페이지에서, 우측 상단에 login ID를 표시해 줍니다.
     url(r'^api-token-auth/$', obtain_auth_token),                                       # Token authorization
-    url(r'^rest-auth/', include('rest_auth.urls')),                                     # Allauth authorization
-    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
+
+    url(r'^rest-auth/', include('rest_auth.urls')),                                     # django-allauth
+    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),           # django-allauth
 
     url(r'^api-jwt-auth/$', obtain_jwt_token),
     url(r'^api-jwt-auth/refresh/$', refresh_jwt_token),
@@ -40,7 +41,7 @@ urlpatterns = [
 
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
     url(r'^dining/', include('dining.urls', namespace='dining')),
-    url(r'^ep08/', include('ep08.urls', namespace='ep08')),
+    # url(r'^ep08/', include('ep08.urls', namespace='ep08')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

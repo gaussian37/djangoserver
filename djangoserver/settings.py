@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -50,11 +51,11 @@ INSTALLED_APPS = [
     'rest_framework',               # django-rest-framework 지원
     'rest_framework.authtoken',     # Token Authorization 타입 지원
 
-    'rest_auth',                    # Allauth 타입 지원
-    'rest_auth.registration',       # Allauth 타입 지원
+    'rest_auth',                    # django-rest-auth
+    'rest_auth.registration',       # django-allauth
 
-    'allauth',                      # Allauth 타입 지원
-    'allauth.account',              # Allauth 타입 지원
+    'allauth',                      # django-allauth
+    'allauth.account',              # django-allauth
     'allauth.socialaccount',        # Allauth 타입 지원
     'allauth.socialaccount.providers.kakao',  # Allauth 타입 지원
 
@@ -62,7 +63,7 @@ INSTALLED_APPS = [
     'django_extensions',            # shell_plus 사용 시 추가 기능 지원
     'accounts',                     # accounts 앱
     'dining',                       # dining 앱
-    'ep08',                         # test 용도 앱
+    # 'ep08',                         # test 용도 앱
 ]
 
 MIDDLEWARE = [
@@ -149,31 +150,33 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS':'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE':6,
+    'PAGE_SIZE' : 6,
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
          'rest_framework.authentication.BasicAuthentication',
          'rest_framework.authentication.SessionAuthentication',
-         'rest_framework.authentication.TokenAuthentication',
-         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+         #'rest_framework.authentication.TokenAuthentication',
+         'rest_framework_jwt.authentication.JSONWebTokenAuthentication', # 인증에 JWT 사용 하도록 추가
     ],
      'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated', # 인증을 사용하도록 기본값으로 추가
     ],
 
     'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.UserRateThrottle', # API 호출 수 제한
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'user': '15/m',
+        'user': '15/m', # API 호출 제한 기준
     },
 }
 
+
 JWT_AUTH = {
-    'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(minutes=30), # Token 만료 시간은 30분으로 설정, 30분 이내로 Refresh 해야함
+    'JWT_ALLOW_REFRESH': True, # Token Refresh 가능하도록 설정함
 }
 
 
-SITE_ID = 1 # In django-rest-auth, set the default page. ex) www.example.com
+SITE_ID = 1 # django-allauth에서 multi-site를 지원하므로 SITE_ID = 1로 지정하여 기본 사이트를 명시 ex) www.example.com
 
-REST_USE_JWT = True # OAuth로 토큰값을 가져올 때,  Token 값이 아닌
+REST_USE_JWT = True # rest-framework가 Token 값을 기본적으로 JWT를 사용하도록 명시함
