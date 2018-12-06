@@ -27,7 +27,7 @@ SECRET_KEY = 's+9#n%%u9u51&yzj9&jn_fd4sw_$^+5*1p_)8a()n&x!$xc4xn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com', '70a8f3e9.ngrok.io']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com']
 
 
 # Application definition
@@ -56,8 +56,8 @@ INSTALLED_APPS = [
 
     'allauth',                      # django-allauth
     'allauth.account',              # django-allauth
-    'allauth.socialaccount',        # Allauth 타입 지원
-    'allauth.socialaccount.providers.kakao',  # Allauth 타입 지원
+    'allauth.socialaccount',        # allauth 타입 지원
+    'allauth.socialaccount.providers.kakao',  # allauth 타입 지원
 
 
     'django_extensions',            # shell_plus 사용 시 추가 기능 지원
@@ -159,7 +159,7 @@ REST_FRAMEWORK = {
          'rest_framework_jwt.authentication.JSONWebTokenAuthentication', # 인증에 JWT 사용 하도록 추가
     ],
      'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated', # 인증을 사용하도록 기본값으로 추가
+         #'rest_framework.permissions.IsAuthenticated', # 인증을 사용하도록 기본값으로 추가
     ],
 
     'DEFAULT_THROTTLE_CLASSES': [

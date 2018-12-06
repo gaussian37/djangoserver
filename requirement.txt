@@ -8,3 +8,4 @@ requests==2.19.1
 django-rest-auth
 "django-rest-auth[with_social]"
 djangorestframework-jwt
+pillow

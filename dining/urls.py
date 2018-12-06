@@ -8,6 +8,7 @@ app_name = 'dining'
 
 router = DefaultRouter()
 router.register(r'restaurant', views.RestaurantViewSet)
+router.register(r'like-restaurant', views.LikeRestaurantViewSet)
 
 urlpatterns = [
     url(r'', include(router.urls)),

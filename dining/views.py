@@ -2,8 +2,8 @@
 
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Restaurant, FoodImage, RestaurantImage, MenuImage
-from .serializers import RestaurantSerializer
+from .models import Restaurant, FoodImage, RestaurantImage, MenuImage, LikeRestaurant
+from .serializers import RestaurantSerializer, LikeRestaurantSerializer
 from .pagination import RestaurantPageNumberPagination
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
@@ -12,8 +12,17 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 
-# Restaurant의 ListView, DetailView 지원
+
+'''
+RestaurantViewSet
+- ListView
+- DetailView
+'''
 class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
+
+    '''
+    Properties
+    '''
 
     # authentication_classes = []
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -29,8 +38,8 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
 
 
     '''
-    Restaurant list 조회 재정의
-    foodCategory와 station 모두에 Parameter가 전달 되었을 경우, 조건 기반으로 조회한다.
+    - Restaurant ListView 재 정의
+    - foodCategory와 station 모두에 Parameter가 전달 되었을 경우, 조건 기반으로 조회한다.
     '''
     def list(self, request, *args, **kwargs):
 
@@ -56,11 +65,11 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
 
         return super().list(request, *args, **kwargs)
 
-    '''
-    Restaurant detail 조회 재정희
-    특정 Restaurant를 조회하였을 때, 조회수가 +1 되도록 한다.
-    '''
 
+    '''
+    - Restaurant DetailView 재 정의
+    - 특정 Restaurant를 조회하였을 때, 조회수가 +1 되도록 한다.
+    '''
     def retrieve(self, request, *args, **kwargs):
         # pk값 가져옴
         pk = self.kwargs['pk']
@@ -87,3 +96,46 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     #     serializer = self.get_serializer(qs, many=True)
     #     print(serializer.data)
     #     return Response(serializer.data)
+
+
+
+
+'''
+LikeRestaurantViewSet
+- ListView
+    - uid 와 restaurant_id 파라미터 입력을 이용하여 GET 요청 시 해당 list를 반환함
+      
+- 기본 DetailView 지원
+    
+'''
+class LikeRestaurantViewSet(viewsets.ModelViewSet):
+
+    '''
+    Properties
+    '''
+
+    # "좋아요" 기능의 경우 인증이 된 유저만 사용 가능하도록 설정
+    permission_classes = [IsAuthenticated]
+
+    # "좋아요" 테이블에서 Object 들을 가져온다.
+    queryset = LikeRestaurant.objects.all()
+
+    # serializer class로 LikeRestaurantSerializer 선정
+    serializer_class = LikeRestaurantSerializer
+
+
+    '''
+    - LikeRestaurantViewSet ListView 재 정의
+        - uid 와 restaurant_id 파라미터 입력을 이용하여 GET 요청 시 해당 list를 반환함
+    '''
+    def list(self, request, *args, **kwargs):
+        # uid 파라미터, 조회 결과 없을 시 None 리턴
+        uid = request.GET.get("uid", None)
+
+        # restaurant-id 파라미터, 조회 결과 없을 시 None 리턴
+        restaurant_id = request.GET.get("restaurant-id", None)
+
+        if uid is not None and restaurant_id is not None:
+            self.queryset = self.queryset.filter(uid=uid, restaurant=restaurant_id)
+
+        return super().list(request, *args, **kwargs)

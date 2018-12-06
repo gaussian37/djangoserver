@@ -2,6 +2,8 @@
 from django.db import models
 from .media_directory import *
 
+
+# 식당에 대한 정보를 저장하는 테이블
 class Restaurant(models.Model):
     # required fields
     restaurantName = models.CharField(max_length=20)
@@ -39,17 +41,28 @@ class Restaurant(models.Model):
         ordering = ('-id',)
 
 
+# 식당에 대한 "좋아요" 선택 유무를 저장하는 테이블
+class LikeRestaurant(models.Model):
+    # required fields
+    uid = models.CharField(max_length=20)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
 
+
+# 음식 이미지 테이블
 class FoodImage(models.Model):
     # required fields
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     foodImage = models.ImageField(upload_to=food_directory_path)
 
+
+# 식당 이미지 테이블
 class RestaurantImage(models.Model):
     # required fields
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     restaurantImage = models.ImageField(upload_to=restaurant_directory_path)
 
+
+# 메뉴 이미지 테이블
 class MenuImage(models.Model):
     # required fields
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
