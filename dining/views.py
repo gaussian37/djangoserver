@@ -25,7 +25,7 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     '''
 
     # authentication_classes = []
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
 
     # Restaurant DB에서 전체 field를 가져 온다.
     queryset = Restaurant.objects.all()
