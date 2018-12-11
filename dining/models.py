@@ -19,6 +19,7 @@ class Restaurant(models.Model):
                              blank=True)
     operatingHours = models.CharField(max_length=50,
                                        blank=True)
+
     searchNum = models.IntegerField(default=0)
     likeNum = models.IntegerField(default=0)
     reviewNum = models.IntegerField(default=0)
@@ -26,7 +27,7 @@ class Restaurant(models.Model):
     # 이미지 리스트
     ## 대표 사진 1장
     representativeImage = models.ImageField(blank=True,
-                                             upload_to=representative_directory_path)
+                                             upload_to="dining/%Y/%m/%d")
 
     ## 음식 사진 리스트
     foodImageList = models.TextField(blank=True)
@@ -48,22 +49,41 @@ class LikeRestaurant(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
 
 
-# 음식 이미지 테이블
-class FoodImage(models.Model):
-    # required fields
+# 이미지 테이블
+class Image(models.Model):
+    ## required field
+
+    # image : 음식/메뉴/식당 사진
+    image = models.ImageField(upload_to="dining/%Y/%m/%d")
+
+    # restaurant에 대한 foreign key
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    foodImage = models.ImageField(upload_to=food_directory_path)
 
+    # review : review에서 등록하였으면 1, 아니면 0
+    isReview = models.BooleanField()
 
-# 식당 이미지 테이블
-class RestaurantImage(models.Model):
-    # required fields
+    # uid : 등록한 사용자 구분 목적
+    uid = models.CharField(max_length=20)
+
+    ## option field
+
+    # category : 0이면 food, 1이면 menu, 2이면 restaurant
+    category = models.IntegerField(blank=True, default=0)
+
+    # created_at : 등록한 시점
+    created_at = models.DateTimeField(auto_now_add=True)
+
+# 리뷰 테이블
+class Review(models.Model):
+    ## required field
+
+    # restaurant에 대한 foreign key
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    restaurantImage = models.ImageField(upload_to=restaurant_directory_path)
 
+    # content : 사용자의 review 본문
+    content = models.TextField()
 
-# 메뉴 이미지 테이블
-class MenuImage(models.Model):
-    # required fields
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-    menuImage = models.ImageField(upload_to=menu_directory_path)
+    # uid : 등록한 사용자의 id
+    uid = models.CharField(max_length=20)
+
+    created_at = models.DateTimeField(auto_now_add = True)
