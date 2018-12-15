@@ -3,6 +3,16 @@
 from rest_framework import serializers
 from .models import Restaurant, LikeRestaurant, Image, Review
 
+class RestaurantAllSerializer(serializers.ModelSerializer):
+    class Meta:
+        pass
+
+
+# class RestaurantSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Restaurant
+#         fields = ('id', 'restaurantName', 'foodCategory', 'station', 'longitude', 'latitude', 'phone', 'operatingHours', 'searchNum')
+
 class RestaurantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant

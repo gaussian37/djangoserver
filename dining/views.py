@@ -30,7 +30,8 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     # permission_classes = [IsAuthenticatedOrReadOnly]
 
     # Restaurant DB에서 전체 field를 가져 온다.
-    queryset = Restaurant.objects.all()
+    # queryset = Restaurant.objects.all()
+    queryset = Restaurant.objects.all().prefetch_related("likerestaurant_set", "image_set", "review_set")
     
     # serializer class로 RestaurantSerializer 선정
     serializer_class = RestaurantSerializer
@@ -70,7 +71,7 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
 
     '''
     - Restaurant DetailView 재 정의
-    - 특정 Restaurant를 조회하였을 때, 조회수가 +1 되도록 한다.
+    - 특정 Restaurant를 조회하였을 때, 조회수가 +1ㄴ 되도록 한다.
     '''
     def retrieve(self, request, *args, **kwargs):
         # pk값 가져옴
