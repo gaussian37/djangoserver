@@ -38,12 +38,12 @@ class Restaurant(models.Model):
     ## 메뉴 사진 리스트
     menuImageList = models.TextField(blank=True)
 
-    class Meta:
-        ordering = ('-id',)
+    # class Meta:
+    #     ordering = ('-id',)
 
 
 # 식당에 대한 "좋아요" 선택 유무를 저장하는 테이블
-class LikeRestaurant(models.Model):
+class Like(models.Model):
     # required fields
     uid = models.CharField(max_length=20)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
@@ -57,10 +57,9 @@ class Image(models.Model):
     image = models.ImageField(upload_to="dining/%Y/%m/%d")
 
     # restaurant에 대한 foreign key
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
-
-    # review : review에서 등록하였으면 1, 아니면 0
-    isReview = models.BooleanField()
+    restaurant = models.ForeignKey(Restaurant,
+                                   related_name="images",
+                                   on_delete=models.CASCADE)
 
     # uid : 등록한 사용자 구분 목적
     uid = models.CharField(max_length=20)
@@ -87,3 +86,18 @@ class Review(models.Model):
     uid = models.CharField(max_length=20)
 
     created_at = models.DateTimeField(auto_now_add = True)
+
+
+# User 정보 테이블
+class User(models.Model):
+    ## required field
+
+    # uid : 등록한 사용자의 id, pk로 사용
+    uid = models.CharField(max_length=20,
+                           primary_key=True)
+
+    # nickname : 앱에서 사용할 nickname
+    nickname = models.CharField(max_length=50)
+
+    # score : 각 사용자가 얻은 점수
+    score = models.IntegerField(blank=True, default=0)

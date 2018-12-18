@@ -2,16 +2,15 @@
 
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Restaurant, LikeRestaurant, Image, Review
-from .serializers import RestaurantSerializer, LikeRestaurantSerializer, ImageSerializer, ReviewSerializer
+from .models import Restaurant, Like, Image, Review, User
+from .serializers import RestaurantSerializer, LikeSerializer, ImageSerializer, ReviewSerializer, UserSerializer
 from .pagination import RestaurantPageNumberPagination, ReviewPageNumberPagination
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-
-
+from .utils import dist
 
 '''
 RestaurantViewSet
@@ -30,8 +29,10 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     # permission_classes = [IsAuthenticatedOrReadOnly]
 
     # Restaurant DB에서 전체 field를 가져 온다.
-    # queryset = Restaurant.objects.all()
-    queryset = Restaurant.objects.all().prefetch_related("likerestaurant_set", "image_set", "review_set")
+
+    # Restaurant DB에서 전체 field를 가져올 때 prefetch_related로 가져온다.
+    queryset = Restaurant.objects.all().prefetch_related(
+        "like_set", "review_set")
     
     # serializer class로 RestaurantSerializer 선정
     serializer_class = RestaurantSerializer
@@ -51,27 +52,44 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         # station 파라미터, 조회 결과 없을 시 None 리턴
         station = request.GET.get("station", None)
 
-        # 위치 정보(위도 : latitude, 경도 : longitude) 파라미터, 조회 결과 없을 시 None 리턴
-        latitude = request.GET.get("latitude", None)
-        longitude = request.GET.get("longitude", None)
+        # ordering 파라미터, 조회 결과 없을 시
+        ordering = request.GET.get("ordering", "likeNum")
 
         '''
         파라미터 상태에 따라 조회 방법 변경
         1. foodCategory & station 기준으로 조회
         2. restarurantName? 위도/경도 기준으로 가까운 거리 순으로 리턴
         '''
-        ## foodCategory와 station 모두 값을 받았을 경우 : foodCategory와 station을 기준으로 조회한 후 결과를 return 한다.
+
+        # foodCategory와 station 모두 값을 받았을 경우 :
+        # foodCategory와 station을 기준으로 조회한 후 결과를 return 한다.
         if foodCategory is not None and station is not None:
+
+            # foodCategory와 station을 기준으로 query를 filter한 결과를 받습니다.
             self.queryset = self.queryset.filter(foodCategory=foodCategory, station=station)
-        else:
-            pass
+
+            qs = self.queryset
+            # 각 restaurant의 like 수를 가져옵니다.
+            self.saveRegisterdNum(qs, 'like')
+
+            # 각 restaurant의 review 수를 가져옵니다.
+            self.saveRegisterdNum(qs, 'review')
+
+            # 거리순으로 입력받은 경우 유클리디안 거리가 짧은 순으로 나열하고
+            # 그 외는 입력 받은 정렬순의 내림차순으로 정렬하고 동일 순위 시 최신순으로 보여줍니다.
+            if ordering == "distance":
+                pass
+            else:
+                self.queryset = self.queryset.order_by("-" + ordering, "-id")
+
+
 
         return super().list(request, *args, **kwargs)
 
 
     '''
     - Restaurant DetailView 재 정의
-    - 특정 Restaurant를 조회하였을 때, 조회수가 +1ㄴ 되도록 한다.
+    - 특정 Restaurant를 조회하였을 때, 조회수가 +1 되도록 한다.
     '''
     def retrieve(self, request, *args, **kwargs):
         # pk값 가져옴
@@ -85,6 +103,19 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         restaurantObject.save()
 
         return super().retrieve(request, *args, **kwargs)
+
+
+    def saveRegisterdNum(self, qs, registered):
+        # 각 restaurant의 like/review 수를 가져옵니다.
+        for q in qs:
+            # Like/Review 테이블에서 각 식당별로 조회한 갯수를 저장합니다.
+            # likeNum/reviewNum에 저장된 결과를 ListView 호출 시 반환합니다.
+            if registered == "like":
+                q.likeNum = len(q.like_set.all())
+                q.save()
+            elif registered == "review":
+                q.reviewNum = len(q.review_set.all())
+                q.save()
 
 
     # '''세부 API 사용 시 아래 참조'''
@@ -104,14 +135,13 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
 
 
 '''
-LikeRestaurantViewSet
+LikeViewSet
 - ListView
     - uid 와 restaurant_id 파라미터 입력을 이용하여 GET 요청 시 해당 list를 반환함
       
 - 기본 DetailView 지원
-    
 '''
-class LikeRestaurantViewSet(viewsets.ModelViewSet):
+class LikeViewSet(viewsets.ModelViewSet):
 
     '''
     Properties
@@ -121,10 +151,10 @@ class LikeRestaurantViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     # "좋아요" 테이블에서 Object 들을 가져온다.
-    queryset = LikeRestaurant.objects.all()
+    queryset = Like.objects.all()
 
     # serializer class로 LikeRestaurantSerializer 선정
-    serializer_class = LikeRestaurantSerializer
+    serializer_class = LikeSerializer
 
 
     '''
@@ -186,8 +216,6 @@ class ImageViewSet(viewsets.ModelViewSet):
     '''
 
 
-
-
 '''
 ReviewViewSet
 '''
@@ -233,3 +261,21 @@ class ReviewViewSet(viewsets.ModelViewSet):
             pass
 
         return super().list(request, *args, **kwargs)
+
+
+'''
+UserViewSet
+'''
+class UserViewSet(viewsets.ModelViewSet):
+    '''
+    Properties
+    '''
+
+    # "User" 기능의 경우 인증이 된 유저만 사용 가능
+    # permission_classes = [IsAuthenticatedOrReadOnly]
+
+    # User 테이블에서 Object 들을 가져온다.
+    queryset = User.objects.all()
+
+    # serializer class로 ReviewSerializer 선정
+    serializer_class = UserSerializer
