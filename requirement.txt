@@ -9,3 +9,7 @@ django-rest-auth
 "django-rest-auth[with_social]"
 djangorestframework-jwt
 pillow
+numpy
+tensorflow
+keras
+haversine

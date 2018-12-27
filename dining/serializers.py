@@ -15,14 +15,14 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class RestaurantSerializer(serializers.ModelSerializer):
-    images = ImageSerializer(many = True, read_only = True)
+    images = ImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Restaurant
         fields = ('id', 'restaurantName', 'foodCategory',
-                  'station', 'longitude', 'latitude',
+                  'station', 'latitude', 'longitude', 'distFromStation',
                   'phone', 'operatingHours', 'searchNum',
-                  'likeNum', 'reviewNum', 'images')
+                  'likeNum', 'reviewNum', 'representativeImage', 'images')
 
 
 class LikeSerializer(serializers.ModelSerializer):
