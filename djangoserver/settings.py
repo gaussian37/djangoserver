@@ -31,14 +31,6 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com']
 
 
 # Application definition
-
-
-'''
-rest_framework : django-rest-framework
-rest_framework.authtoken : 
-
-'''
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -63,7 +55,7 @@ INSTALLED_APPS = [
     'django_extensions',            # shell_plus 사용 시 추가 기능 지원
     'accounts',                     # accounts 앱
     'dining',                       # dining 앱
-    # 'ep08',                         # test 용도 앱
+    'drf_yasg',                     # drf-yasg
 ]
 
 MIDDLEWARE = [
@@ -166,7 +158,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle', # API 호출 수 제한
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'user': '15/m', # API 호출 제한 기준
+        'user': '1000/m', # API 호출 제한 기준
     },
 }
 

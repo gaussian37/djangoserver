@@ -13,3 +13,4 @@ numpy
 tensorflow
 keras
 haversine
+drf-yasg

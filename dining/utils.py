@@ -1,10 +1,13 @@
-from math import cos, asin, sqrt
 from haversine import haversine
 
 # haversine 거리를 사용하여 식당과 역과의 거리를 반환
 def dist(restaurant_lat, restaurant_long, station):
    # 단위는 m로 바꿔서 리턴
    return haversine((restaurant_lat, restaurant_long), stationDict[station]) * 1000
+
+# image base url
+base_url = "http://localhost:8000"
+image_base_url = base_url + "/media/"
 
 # station의 좌표
 stationDict = {

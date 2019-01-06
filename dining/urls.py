@@ -4,7 +4,7 @@ from django.conf.urls import include, url
 from rest_framework.routers import DefaultRouter
 from . import views
 
-app_name = 'dining'
+app_name = 'dining/v1'
 
 router = DefaultRouter()
 router.register(r'user', views.UserViewSet)

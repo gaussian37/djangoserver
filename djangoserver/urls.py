@@ -20,12 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
+from .schema import *
 
-'''
-api-auth : 
-
-
-'''
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -40,8 +36,11 @@ urlpatterns = [
     url(r'^api-jwt-auth/verify/$', verify_jwt_token),
 
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
-    url(r'^dining/', include('dining.urls', namespace='dining')),
-    # url(r'^ep08/', include('ep08.urls', namespace='ep08')),
+    url(r'^dining/v1/', include('dining.urls', namespace='dining/v1')),
+
+    url(r'^swagger(?P<format>\.json|\.yaml)/v1$', schema_view_v1.without_ui(cache_timeout=0), name='schema-json'),
+    url(r'^swagger/v1/$', schema_view_v1.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    url(r'^dining/v1/redoc/$', schema_view_v1.with_ui('redoc', cache_timeout=0), name='schema-redoc-v1'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
