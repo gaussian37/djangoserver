@@ -79,7 +79,7 @@ class Image(models.Model):
     ## option field
 
     # category : 0이면 food, 1이면 menu, 2이면 restaurant
-    category = models.IntegerField(blank=True, default=0)
+    category = models.IntegerField(blank=True, default=-1)
 
     # created_at : 등록한 시점
     created_at = models.DateTimeField(auto_now_add=True)

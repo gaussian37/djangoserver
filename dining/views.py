@@ -17,7 +17,6 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     Restaurant 관련 REST API 기능 제공
     """
 
-
     # authentication_classes = []
 
     # Restaurant는 인증이 된 경우만 POST가 가능하고 그렇지 않으면 Read만 가능하도록 설정
