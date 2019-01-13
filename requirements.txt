@@ -14,3 +14,4 @@ keras
 haversine
 drf-yasg
 ipython==7.0.1
+pymysql
