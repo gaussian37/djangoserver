@@ -8,7 +8,6 @@ django-rest-auth
 django-rest-auth[with_social]
 djangorestframework-jwt
 django-debug-toolbar
-pillow
 numpy
 tensorflow
 keras
