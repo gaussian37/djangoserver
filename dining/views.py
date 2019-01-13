@@ -36,7 +36,6 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     pagination_class = RestaurantPageNumberPagination
 
 
-
     def list(self, request, *args, **kwargs):
         '''
         음식 카테고리/역/정렬순 기준 해당 식당 리스트를 읽어오는 API
@@ -70,10 +69,6 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
 
             # foodCategory와 station을 기준으로 query를 filter한 결과를 받습니다.
             self.queryset = self.queryset.filter(foodCategory=foodCategory, station=station)
-
-            qs = self.queryset
-            # Like/Review/Distance 를 갱신합니다. (Distance는 최초 한번 갱신 됩니다.)
-            self.updateLikeReviewDistNum(qs, station, "query")
 
             # 입력 받은 정렬순의 내림차순으로 정렬하고 동일 순위 시 최신순으로 보여줍니다.
             if ordering == "distFromStation":
@@ -135,24 +130,6 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         request.POST['distFromStation'] = distFromStation
 
         return super().create(request, *args, **kwargs)
-
-    def updateLikeReviewDistNum(self, qs, station, types):
-        '''
-        Like/Review/Dist 전체를 갱신 합니다.
-
-        ---
-        + qs : QuerySet
-        + station : 역
-        + types : qs가 Query 인지 Model 인지 전달해 줍니다.
-        '''
-        # 각 restaurant의 like 수를 갱신합니다.
-        self.saveLikeReviewNum(qs, 'like', types)
-
-        # 각 restaurant의 review 수를 갱신합니다.
-        self.saveLikeReviewNum(qs, 'review', types)
-
-        # 각 restaurant의 station으로 부터의 거리수를 갱신 합니다.
-        self.saveDistanceFromStation(qs, station, types)
 
     def saveLikeReviewNum(self, qs, param, types):
         '''

@@ -1,4 +1,3 @@
-ipython==7.0.1
 django==2.1.1
 django-extensions==2.1.3
 django-filter==2.0.0
@@ -8,9 +7,11 @@ requests==2.19.1
 django-rest-auth
 "django-rest-auth[with_social]"
 djangorestframework-jwt
+django-debug-toolbar
 pillow
 numpy
 tensorflow
 keras
 haversine
 drf-yasg
+ipython==7.0.1

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import datetime
+import pymysql
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -40,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',         # Multi site 지원
 
+    'debug_toolbar',                # django debug toolbar
+
     'rest_framework',               # django-rest-framework 지원
     'rest_framework.authtoken',     # Token Authorization 타입 지원
 
@@ -66,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'djangoserver.urls'
@@ -172,3 +176,6 @@ JWT_AUTH = {
 SITE_ID = 1 # django-allauth에서 multi-site를 지원하므로 SITE_ID = 1로 지정하여 기본 사이트를 명시 ex) www.example.com
 
 REST_USE_JWT = True # rest-framework가 Token 값을 기본적으로 JWT를 사용하도록 명시함
+
+# The Debug Toolbar is shown only if your IP is listed in the INTERNAL_IPS setting.
+INTERNAL_IPS = ['127.0.0.1']
