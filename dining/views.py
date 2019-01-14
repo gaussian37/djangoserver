@@ -104,6 +104,22 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
 
     def create(self, request, *args, **kwargs):
         '''
+        식당 등록 API
+
+        ---
+        + parameters :
+            + restaurantName
+            + foodCategory
+            + station
+            + longitude
+            + latitude
+            + distFromStation
+
+            + phone
+            + operatingHours
+        '''
+
+        '''
         새로운 식당을 등록하는 API
 
         ---
@@ -243,7 +259,7 @@ class LikeViewSet(viewsets.ModelViewSet):
         ---
         + parameters :
             + `uid` : 사용자의 uid를 입력합니다. (**필수**)
-            + `restaurant-id` : 식당 id를 입력 합니다. (**필수**)
+            + `restaurant` : 식당 id를 입력 합니다. (**필수**)
         + create 시 해당 restaurant의 likeNum을 +1 합니다.
         '''
         # 입력 받은 데이터 접근
@@ -410,7 +426,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         + parameters :
             + `content` : 리뷰 본문을 입력합니다. (**필수**)
             + `uid` : 리뷰 작성자의 uid를 입력합니다. (**필수**)
-            + `restaurant-id` : 식당 id를 입력합니다. (**필수**)
+            + `restaurant` : 식당 id를 입력합니다. (**필수**)
         + 리뷰 생성 시 해당 Restaurant의 reviewNum을 +1 합니다.
         '''
         # 입력 받은 데이터 접근
