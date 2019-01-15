@@ -33,7 +33,7 @@ images = Image.objects.filter(category=-1)
 
 # 미분류된 이미지를 분류합니다.
 for image in images:
-    fname = 'media' + image.image.name
+    fname = 'media/' + image.image.name
     # 글자 인식을 해서 글자 수를 이용하여 메뉴판인지 아닌지 부터 확인 합니다.
     text = pytesseract.image_to_string(PIL_Image.open(fname))
 
