@@ -39,5 +39,5 @@ for q in qs:
 # 현재 시간 프린트
 now = time.localtime()
 s = "%04d-%02d-%02d %02d:%02d:%02d" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec)
-sys.stdout = open("/home/gaussian37/likeReviewSettingTime.txt", "a")
+sys.stdout = open("/home/gaussian37/djangoserver/likeReviewSettingTime.txt", "a")
 print(s)
