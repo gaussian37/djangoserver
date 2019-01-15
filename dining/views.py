@@ -28,7 +28,7 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         "review_set",
         "images",
     )
-    
+
     # serializer class로 RestaurantSerializer 선정
     serializer_class = RestaurantSerializer
     
@@ -147,35 +147,25 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
 
         return super().create(request, *args, **kwargs)
 
-    def saveLikeReviewNum(self, qs, param, types):
+    def saveLikeReviewNum(self, restaurnatObject, mode="all"):
         '''
         queryset에 해당하는 Restaurant의 likeNum과 ReviewNum을 갱신하는 함수
 
         ---
-        + qs : QuerySet
-        + param : like/review를 입력 받으며 입력받은 Num을 갱신합니다.
-        + types : qs가 Query 인지 Model 인지 전달해 줍니다.
+        + restaurnatObject : likeNum 또는 ReviewNum을 갱신할 Restaurant Object를 입력 받습니다.
+        + mode : all/like/review를 입력 받으며 입력받은 Num을 갱신합니다. 기본값은 `all` 입니다.
         '''
 
-        if types == "model":
-            if param == "like":
-                qs.likeNum = len(qs.like_set.all())
-                qs.save()
-            elif param == "review":
-                qs.reviewNum = len(qs.review_set.all())
-                qs.save()
-
-        elif types == "query":
-            # 각 restaurant의 like/review 수를 가져옵니다.
-            for q in qs:
-                # Like/Review 테이블에서 각 식당별로 조회한 갯수를 저장합니다.
-                # likeNum/reviewNum에 저장된 결과를 ListView 호출 시 반환합니다.
-                if param == "like":
-                    q.likeNum = len(q.like_set.all())
-                    q.save()
-                elif param == "review":
-                    q.reviewNum = len(q.review_set.all())
-                    q.save()
+        if mode == "all":
+            restaurnatObject.likeNum = restaurnatObject.like_set.all().count()
+            restaurnatObject.reviewNum = restaurnatObject.review_set.all().count()
+            restaurnatObject.save()
+        elif mode == "like":
+            restaurnatObject.likeNum = restaurnatObject.like_set.all().count()
+            restaurnatObject.save()
+        elif mode == "review":
+            restaurnatObject.reviewNum = restaurnatObject.review_set.all().count()
+            restaurnatObject.save()
 
     def saveDistanceFromStation(self, qs, station, types):
         '''
