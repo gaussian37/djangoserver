@@ -157,15 +157,20 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         '''
 
         if mode == "all":
-            restaurnatObject.likeNum = restaurnatObject.like_set.all().count()
-            restaurnatObject.reviewNum = restaurnatObject.review_set.all().count()
-            restaurnatObject.save()
+            if restaurnatObject.likeNum != restaurnatObject.like_set.all().count():
+                restaurnatObject.likeNum = restaurnatObject.like_set.all().count()
+                restaurnatObject.save()
+            if restaurnatObject.reviewNum != restaurnatObject.review_set.all().count():
+                restaurnatObject.reviewNum = restaurnatObject.review_set.all().count()
+                restaurnatObject.save()
         elif mode == "like":
-            restaurnatObject.likeNum = restaurnatObject.like_set.all().count()
-            restaurnatObject.save()
+            if restaurnatObject.likeNum != restaurnatObject.like_set.all().count():
+                restaurnatObject.likeNum = restaurnatObject.like_set.all().count()
+                restaurnatObject.save()
         elif mode == "review":
-            restaurnatObject.reviewNum = restaurnatObject.review_set.all().count()
-            restaurnatObject.save()
+            if restaurnatObject.reviewNum != restaurnatObject.review_set.all().count():
+                restaurnatObject.reviewNum = restaurnatObject.review_set.all().count()
+                restaurnatObject.save()
 
     def saveDistanceFromStation(self, qs, station, types):
         '''
