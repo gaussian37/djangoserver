@@ -1,8 +1,11 @@
 import os
 import django
+import sys
+import time
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'djangoserver.settings')
 django.setup()
 
+# django_extensions의 shell_plus 실행 시 참조되는 전체 library 호출
 from allauth.account.models import EmailAddress, EmailConfirmation
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 from dining.models import Image, Like, Restaurant, Review
@@ -31,3 +34,10 @@ qs = Restaurant.objects.all().prefetch_related("like_set", "review_set")
 # likeNum과 reviewNum 갱신합니다.
 for q in qs:    
     rv.saveLikeReviewNum(q)
+
+
+# 현재 시간 프린트
+now = time.localtime()
+s = "%04d-%02d-%02d %02d:%02d:%02d" % (now.tm_year, now.tm_mon, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec)
+sys.stdout = open("/home/gaussian37/likeReviewSettingTime.txt", "a")
+print(s)
