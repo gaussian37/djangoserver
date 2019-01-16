@@ -95,5 +95,8 @@ class User(models.Model):
     # nickname : 앱에서 사용할 nickname
     nickname = models.CharField(max_length=50)
 
+    # profileImageLink : 카카오 프로필의 이미지 링크를 저장
+    profileImageLink = models.TextField()
+
     # score : 각 사용자가 얻은 점수
     score = models.IntegerField(blank=True, default=0)
