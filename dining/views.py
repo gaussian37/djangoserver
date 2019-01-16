@@ -427,7 +427,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         # 입력 받은 데이터 접근
         data = request.data.dict()
         # 입력 받은 데이터 중 restaurnat(식당 id)를 이용하여 Restaurant Object 확인
-        restaurant = Restaurant.objects.get(id = data["restaurant-id"])
+        restaurant = Restaurant.objects.get(id = data["restaurant"])
         # 할당 받은 Restaurant의 reviewNum을 +1 해줍니다.
         self.setRestaurantreviewNum(restaurant, 1)
 
