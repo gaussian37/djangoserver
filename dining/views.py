@@ -537,22 +537,28 @@ class StationViewSet(viewsets.ModelViewSet):
 
             # distance 오름 차순으로 정렬
             stationListWithDistance = sorted(stationListWithDistance)
+            # returnNum 갯수 만큼만 저장합니다.
+            stationListWithDistance = stationListWithDistance[:returnNum]
 
             # returnNum 갯수 내에 해당하는 station을 QuerySet에 저장하여 반환합니다.
             # 이 때 distance도 갱신합니다.
-            for stationWithDistance in stationListWithDistance[:returnNum]:
+            for stationWithDistance in stationListWithDistance:
                 distance = stationWithDistance[0]
                 station = stationWithDistance[1]
 
-                # queryset에 대상 station을 저장합니다.
-                queryset |= self.queryset.filter(station=station)
+                # station으로 조회된 Queryset을 가져옵니다.
+                filteredQueryset = self.queryset.filter(station=station)
 
-                # 마지막으로 저장된 station의 distance를 업데이트 하고 저장합니다.
-                q = queryset.last()
+                # 조회한 station의 distance를 업데이트 하고 저장합니다.
+                q = filteredQueryset.first()
                 q.distFromStation = distance
                 q.save()
 
-            self.queryset = queryset
+                # queryset에 대상 station을 저장합니다.
+                queryset |= filteredQueryset
+
+            # 식당과 역과의 거리를 오름차순으로 정렬하여 반환합니다.
+            self.queryset = queryset.order_by("distFromStation")
 
         return super().list(request, *args, **kwargs)
 
