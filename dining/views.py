@@ -2,15 +2,15 @@
 
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Restaurant, Like, Image, Review, User
-from .serializers import RestaurantSerializer, LikeSerializer, ImageSerializer, ReviewSerializer, UserSerializer
+from .models import Restaurant, Like, Image, Review, User, Station
+from .serializers import RestaurantSerializer, LikeSerializer, ImageSerializer, ReviewSerializer, UserSerializer, StationSerializer
 from .pagination import RestaurantPageNumberPagination, ReviewPageNumberPagination
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from .utils import dist, image_base_url
+from .utils import dist, image_base_url, distByTwoPoints
 
 class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
     """
@@ -476,3 +476,93 @@ class UserViewSet(viewsets.ModelViewSet):
 
     # serializer class로 ReviewSerializer 선정
     serializer_class = UserSerializer
+
+
+class StationViewSet(viewsets.ModelViewSet):
+    '''
+    역 정보 저장 및 가까운 역을 추천해주는 REST API
+    '''
+
+
+    # "Station" 기능의 경우 인증이 된 유저만 사용 가능
+    # permission_classes = [IsAuthenticatedOrReadOnly]
+
+
+    # Station 테이블에서 모든 Object 들을 가져온다.
+    queryset = Station.objects.all()
+
+    # serializer class로 StationSerializer 선정
+    serializer_class = StationSerializer
+
+    def list(self, request, *args, **kwargs):
+        '''
+        가까운 역을 추천해주는 REST API
+
+        ---
+        + parameters :
+            + `latitude` : 위도를 입력합니다. (**필수**)
+            + `longitude` : 경도를 입력합니다. (**필수**)
+            + `returnNum` : 리턴해 줄 가장 가까운 역의 갯수. (기본값 = 3)
+        + returns :
+            +  입력 받은 GPS 기준 가장 가까운 역을 returnNum의 갯수 만큼 return 합니다.
+        '''
+
+        # 입력 받은 latitude를 float 형으로 변환
+        latitude = request.GET.get("latitude", None)
+        if latitude is not None:
+            latitude = float(latitude)
+
+        # 입력 받은 longitude를 float 형으로 변환
+        longitude = request.GET.get("longitude", None)
+        if longitude is not None:
+            longitude = float(longitude)
+
+        # 입력 받은 returnNum을 int 형으로 변환
+        returnNum = request.GET.get("returnNum", 3)
+        if returnNum is not None:
+            returnNum = int(returnNum)
+
+        # 조회 결과를 저장할 빈 쿼리셋
+        queryset = Station.objects.filter(station="")
+        if latitude is not None and longitude is not None:
+            # (식당과의 거리, 역 이름) 형태로 리스트에 저장합니다.
+            stationListWithDistance = []
+
+            # 모든 역을 대상으로 식당과 역 사이의 거리를 구하되 식당과 역 사이의 거리가 5,000m 이하인 식당만 저장합니다.
+            for q in self.queryset:
+                distance = distByTwoPoints(latitude, longitude, q.latitude, q.longitude)
+                # 거리가 5,000m가 넘는 식당은 제외합니다.
+                if distance < 5000:
+                    stationListWithDistance.append((distance, q.station))
+
+            # distance 오름 차순으로 정렬
+            stationListWithDistance = sorted(stationListWithDistance)
+
+            # returnNum 갯수 내에 해당하는 station을 QuerySet에 저장하여 반환합니다.
+            # 이 때 distance도 갱신합니다.
+            for stationWithDistance in stationListWithDistance[:returnNum]:
+                distance = stationWithDistance[0]
+                station = stationWithDistance[1]
+
+                # queryset에 대상 station을 저장합니다.
+                queryset |= self.queryset.filter(station=station)
+
+                # 마지막으로 저장된 station의 distance를 업데이트 하고 저장합니다.
+                q = queryset.last()
+                q.distFromStation = distance
+                q.save()
+
+            self.queryset = queryset
+
+        return super().list(request, *args, **kwargs)
+
+
+
+
+
+
+
+
+
+
+

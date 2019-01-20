@@ -23,14 +23,15 @@ from django.db import transaction
 from django.db.models import Avg, Case, Count, F, Max, Min, Prefetch, Q, Sum, When, Exists, OuterRef, Subquery
 from django.utils import timezone
 from django.urls import reverse
-# RestaurantViewSet Import
-from dining.views import RestaurantViewSet
 
-# RestaurantViewSet 객체 생성
-rv = RestaurantViewSet()
-# like, review 테이블을 prefetch_related로 모든 객체 불러옵니다.
-qs = Restaurant.objects.all().prefetch_related("like_set", "review_set")
+from dining.utils import *
+import requests
 
-# likeNum과 reviewNum 갱신합니다.
-for q in qs:    
-    rv.saveLikeReviewNum(q)
+diningBaseUrl = "http://gaussian37.pythonanywhere.com/dining/v1/"
+
+# stationDict를 통하여 역 이름과 GPS 정보를 가져 옵니다.
+for item in stationDict.items():
+    data = {"station":item[0],
+            "latitude":item[1][0],
+            "longitude" :item[1][1]}
+    requests.post(diningBaseUrl + "station/", data = data)

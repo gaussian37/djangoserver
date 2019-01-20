@@ -98,5 +98,26 @@ class User(models.Model):
     # profileImageLink : 카카오 프로필의 이미지 링크를 저장
     profileImageLink = models.TextField()
 
+    ## Non requred field
+
     # score : 각 사용자가 얻은 점수
     score = models.IntegerField(blank=True, default=0)
+
+class Station(models.Model):
+    ## required fields
+
+    # station : 역 이름
+    station = models.CharField(max_length=15)
+
+    # longitude : 경도
+    longitude = models.FloatField()
+
+    # latitude : 위도
+    latitude = models.FloatField()
+
+    ## Non required fields
+    # distFromStation : 입력 받은 GPS와 역과의 거리를 저장할 필드
+    distFromStation = models.FloatField(blank=True, default=-1)
+
+
+

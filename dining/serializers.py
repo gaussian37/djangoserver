@@ -1,7 +1,7 @@
 # dining/serializers.py
 
 from rest_framework import serializers
-from .models import Restaurant, Like, Image, Review, User
+from .models import Restaurant, Like, Image, Review, User, Station
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,3 +34,8 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = '__all__'
+
+class StationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Station
+        fields = ('station', 'latitude', 'longitude', 'distFromStation')

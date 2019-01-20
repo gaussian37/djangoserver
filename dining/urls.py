@@ -12,6 +12,7 @@ router.register(r'restaurant', views.RestaurantViewSet)
 router.register(r'like', views.LikeViewSet)
 router.register(r'image', views.ImageViewSet)
 router.register(r'review', views.ReviewViewSet)
+router.register(r'station', views.StationViewSet)
 
 urlpatterns = [
     url(r'', include(router.urls)),
