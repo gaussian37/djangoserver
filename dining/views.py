@@ -433,6 +433,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
         return super().create(request, *args, **kwargs)
 
+
     def destroy(self, request, *args, **kwargs):
         '''
         리뷰 삭제 API
@@ -476,6 +477,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
     # serializer class로 ReviewSerializer 선정
     serializer_class = UserSerializer
+
+    def partial_update(self, request, *args, **kwargs):
+
+        return super().partial_update(request, *args, **kwargs)
 
 
 class StationViewSet(viewsets.ModelViewSet):
