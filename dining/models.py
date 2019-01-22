@@ -53,6 +53,7 @@ class User(models.Model):
     score = models.IntegerField(blank=True, default=0)
 
 
+
 # 리뷰 테이블
 class Review(models.Model):
     ## required field
@@ -66,12 +67,7 @@ class Review(models.Model):
     # uid : 등록한 사용자의 id
     uid = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    # nickname : 등록한 사용자의 nickname
-    nickname = models.CharField(max_length=50, default = "")
-
-    # profileImageLink : 카카오 프로필의 이미지 링크를 저장
-    profileImageLink = models.TextField(default = "")
-
+    # created_at : 리뷰를 등록한 시점
     created_at = models.DateTimeField(auto_now_add=True)
 
 

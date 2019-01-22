@@ -31,9 +31,11 @@ class LikeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ReviewSerializer(serializers.ModelSerializer):
+    uid = UserSerializer(read_only=True)
+
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = ('restaurant', 'content', 'created_at', 'uid')
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
