@@ -2,8 +2,8 @@
 
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Restaurant, Like, Image, Review, User, Station
-from .serializers import RestaurantSerializer, LikeSerializer, ImageSerializer, ReviewSerializer, UserSerializer, StationSerializer
+from .models import Restaurant, Like, Image, Review, Users, Station
+from .serializers import RestaurantSerializer, LikeSerializer, ImageSerializer, ReviewSerializer, UsersSerializer, StationSerializer
 from .pagination import RestaurantPageNumberPagination, ReviewPageNumberPagination
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
@@ -464,7 +464,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         restaurant.reviewNum += offset
         restaurant.save()
 
-class UserViewSet(viewsets.ModelViewSet):
+class UsersViewSet(viewsets.ModelViewSet):
     '''
     사용자 정보에 관한 REST API
     '''
@@ -473,14 +473,40 @@ class UserViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticatedOrReadOnly]
 
     # User 테이블에서 Object 들을 가져온다.
-    queryset = User.objects.all()
+    queryset = Users.objects.all()
 
     # serializer class로 ReviewSerializer 선정
-    serializer_class = UserSerializer
+    serializer_class = UsersSerializer
 
-    def partial_update(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
+        '''
+        user id를 입력하여 유저의 상세 정보를 조회하는 API
 
-        return super().partial_update(request, *args, **kwargs)
+        ---
+        + parameter (ex. dining/v1/users/123 : uid가 123인 경우의 예)
+            + uid
+                + uid에 해당하는 유저의 정보를 가져 옵니다.
+                + 정보를 가져올 때 등록한 좋아요 수 / 리뷰 수 / 식당 수를 가져옵니다.
+        '''
+
+        # pk값(=uid) 가져옵니다.
+        pk = self.kwargs['pk']
+        # pk값을 입력하여 해당하는 user의 정보를 가져옵니다.
+        qs = Users.objects.get(uid=pk)
+        # Like 테이블에서 uid에 해당하는 user가 등록한 Like 갯수를 가져 옵니다.
+        likeNum = Like.objects.filter(uid=pk).count()
+        # review 테이블에서 uid에 해당하는 user가 등록한 Review 갯수를 가져 옵니다.
+        reviewNum = Review.objects.filter(uid=pk).count()
+        # restaurant 테이블에서 uid에 해당하는 user가 등록한 Restaurant 갯수를 가져 옵니다.
+        restaurantNum = Restaurant.objects.filter(uid=pk).count()
+
+        # likeNum, reviewNum, restaurantNum을 각각 createdLikeNum/ReviewNum/RestaurantNum 에 저장합니다.
+        qs.createdLikeNum = likeNum
+        qs.createdReviewNum = reviewNum
+        qs.createdRestaurantNum = restaurantNum
+        qs.save()
+
+        return super().retrieve(request, *args, **kwargs)
 
 
 class StationViewSet(viewsets.ModelViewSet):

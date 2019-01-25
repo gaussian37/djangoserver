@@ -1,11 +1,11 @@
 # dining/serializers.py
 
 from rest_framework import serializers
-from .models import Restaurant, Like, Image, Review, User, Station
+from .models import Restaurant, Like, Image, Review, Users, Station
 
-class UserSerializer(serializers.ModelSerializer):
+class UsersSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = Users
         fields = '__all__'
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Restaurant
-        fields = ('id', 'restaurantName', 'foodCategory',
+        fields = ('id', 'uid', 'restaurantName', 'foodCategory',
                   'station', 'latitude', 'longitude', 'distFromStation',
                   'phone', 'operatingHours', 'searchNum',
                   'likeNum', 'reviewNum', 'representativeImage', 'images')
@@ -31,8 +31,6 @@ class LikeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ReviewSerializer(serializers.ModelSerializer):
-    uid = UserSerializer(read_only=True)
-
     class Meta:
         model = Review
         fields = ('restaurant', 'content', 'created_at', 'uid')

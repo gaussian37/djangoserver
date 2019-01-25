@@ -3,12 +3,41 @@ from django.db import models
 from .utils import dist
 from .media_directory import *
 
+
+# User 정보 테이블
+class Users(models.Model):
+    ## required field
+
+    # id : 등록한 사용자의 id, pk로 사용
+    uid = models.CharField(primary_key=True, max_length=20)
+
+    # nickname : 앱에서 사용할 nickname
+    nickname = models.CharField(max_length=50)
+
+    # profileImageLink : 카카오 프로필의 이미지 링크를 저장
+    profileImageLink = models.TextField()
+
+    ## Non requred field
+
+    # likeNum
+    createdLikeNum = models.IntegerField(blank=True, default=0)
+
+    createdReviewNum = models.IntegerField(blank=True, default=0)
+
+    createdRestaurantNum = models.IntegerField(blank=True, default=0)
+
+    # score : 각 사용자가 얻은 점수
+    score = models.IntegerField(blank=True, default=0)
+
+
+
 # 식당에 대한 정보를 저장하는 테이블
 class Restaurant(models.Model):
     # required fields
     restaurantName = models.CharField(max_length=20)
     foodCategory = models.CharField(max_length=20)
     station = models.CharField(max_length=20)
+    uid = models.ForeignKey(Users, on_delete=models.CASCADE)
 
     ## 음식점 위치 위도/경도
     longitude = models.FloatField()
@@ -34,26 +63,6 @@ class Restaurant(models.Model):
     #     ordering = ('-id',)
 
 
-# User 정보 테이블
-class User(models.Model):
-    ## required field
-
-    # uid : 등록한 사용자의 id, pk로 사용
-    uid = models.BigIntegerField(primary_key=True)
-
-    # nickname : 앱에서 사용할 nickname
-    nickname = models.CharField(max_length=50)
-
-    # profileImageLink : 카카오 프로필의 이미지 링크를 저장
-    profileImageLink = models.TextField()
-
-    ## Non requred field
-
-    # score : 각 사용자가 얻은 점수
-    score = models.IntegerField(blank=True, default=0)
-
-
-
 # 리뷰 테이블
 class Review(models.Model):
     ## required field
@@ -65,7 +74,8 @@ class Review(models.Model):
     content = models.TextField()
 
     # uid : 등록한 사용자의 id
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
+    uid = models.ForeignKey(Users,
+                            on_delete=models.CASCADE)
 
     # created_at : 리뷰를 등록한 시점
     created_at = models.DateTimeField(auto_now_add=True)
@@ -76,7 +86,7 @@ class Like(models.Model):
     # required fields
 
     # uid : 등록한 사용자의 ID
-    uid = models.ForeignKey(User, on_delete=models.CASCADE)
+    uid = models.ForeignKey(Users, on_delete=models.CASCADE)
 
     # restaurant : 식당 ID
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
@@ -98,7 +108,7 @@ class Image(models.Model):
     review = models.ForeignKey(Review, on_delete=models.CASCADE)
 
     # uid : 등록한 사용자 구분 목적
-    uid = models.ForeignKey(User,  on_delete=models.CASCADE)
+    uid = models.ForeignKey(Users,  on_delete=models.CASCADE)
 
     ## option field
 
@@ -123,6 +133,3 @@ class Station(models.Model):
     ## Non required fields
     # distFromStation : 입력 받은 GPS와 역과의 거리를 저장할 필드
     distFromStation = models.FloatField(blank=True, default=-1)
-
-
-

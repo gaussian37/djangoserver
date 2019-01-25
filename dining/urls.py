@@ -7,7 +7,7 @@ from . import views
 app_name = 'dining/v1'
 
 router = DefaultRouter()
-router.register(r'user', views.UserViewSet)
+router.register(r'users', views.UsersViewSet)
 router.register(r'restaurant', views.RestaurantViewSet)
 router.register(r'like', views.LikeViewSet)
 router.register(r'image', views.ImageViewSet)
