@@ -488,6 +488,18 @@ class UsersViewSet(viewsets.ModelViewSet):
     # serializer class로 ReviewSerializer 선정
     serializer_class = UsersSerializer
 
+    def create(self, request, *args, **kwargs):
+        '''
+        user id를 입력 시 사용하는 API
+
+        ---
+        + uid : 사용자 고유의 uid를 입력하며 Primary Key 값으로 사용됨 (**필수**)
+        + nickname : 앱에서 보여질 nicknname을 입력 (**필수**)
+        + profileImageLink : 앱에서 보여일 프로필 사진의 링크 입력 (**필수**)
+        '''
+
+        return super().create(request, *args, **kwargs)
+
     def retrieve(self, request, *args, **kwargs):
         '''
         user id를 입력하여 유저의 상세 정보를 조회하는 API
