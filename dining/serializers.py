@@ -33,7 +33,7 @@ class LikeSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ('restaurant', 'content', 'created_at', 'uid')
+        fields = ('id', 'restaurant', 'content', 'created_at', 'uid', 'nickname', 'profileImageLink')
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
