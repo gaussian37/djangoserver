@@ -380,14 +380,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAuthenticatedOrReadOnly]
 
     # "이미지" 테이블에서 Object 들을 가져온다.
-    queryset = Review.objects.all().select_related("restaurant")
+    queryset = Review.objects.all().select_related("restaurant", "uid")
 
     # serializer class로 ReviewSerializer 선정
     serializer_class = ReviewSerializer
 
     def list(self, request, *args, **kwargs):
         '''
-        review 리스트를 불러오는 API
+        리뷰 리스트를 불러오는 API
 
         ---
         + parameters :
@@ -423,6 +423,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
             + `uid` : 리뷰 작성자의 uid를 입력합니다. (**필수**)
             + `restaurant` : 식당 id를 입력합니다. (**필수**)
         + 리뷰 생성 시 해당 Restaurant의 reviewNum을 +1 합니다.
+        + 리뷰 생성 시 nickname과 profileImageLink를 서버에서 자동으로 입력합니다.
         '''
         # 입력 받은 데이터 접근
         data = request.data.dict()
@@ -430,6 +431,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
         restaurant = Restaurant.objects.get(id = data["restaurant"])
         # 할당 받은 Restaurant의 reviewNum을 +1 해줍니다.
         self.setRestaurantreviewNum(restaurant, 1)
+
+        # Review 등록 시, Review의 nickname과 profileImage는 User 테이블에서 조회해서 저장합니다.
+        user = Users.objects.get(uid = data["uid"])
+
+        # request.data를 변경 가능하도록 만듭니다.
+        request.POST._mutable = True
+        # Review 테이블의 필드인 nickname과 profileImageLink 를 현재 Users 테이블에서 조회한 결과로 입력해 줍니다.
+        request.POST['nickname'] = user.nickname
+        request.POST['profileImageLink'] = user.profileImageLink
 
         return super().create(request, *args, **kwargs)
 
@@ -507,6 +517,89 @@ class UsersViewSet(viewsets.ModelViewSet):
         qs.save()
 
         return super().retrieve(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        '''
+        user의 nickname 또는 profileImageLink를 변경 시 사용되는 API (부분 변경)
+
+        ---
+        + 변경되는 nickname 또는 profileImageLink를 다른 테이블에서도 반영해 줍니다.
+        + 변경 필요한 테이블
+            + Review
+
+        '''
+
+        # update 될 입력된 데이터를 가져 옵니다.
+        data = request.data.dict()
+
+        # pk 값인 uid를 가져 옵니다.
+        uid = self.kwargs['pk']
+
+        # 입력된 데이터 중 nickname을 가져 옵니다.
+        nickname = data.get("nickname", None)
+        # 입력된 데이터 중 profileImageLink를 가져 옵니다.
+        profileImageLink = data.get("profileImageLink", None)
+
+        # Review를 uid 기준으로 조회하여 해당되는 인스턴스들을 쿼리셋을 받아옵니다.
+        reviewQuerySet = Review.objects.select_related("uid").filter(uid=uid)
+
+        # Review 테이블의 nickname과 profileImageLink를 변경 내용으로 업데이트 해줍니다.
+        for reviewInstance in reviewQuerySet:
+            # nickname이 입력된 경우만 nickname을 수정합니다.
+            if nickname is not None:
+                reviewInstance.nickname = nickname
+            # profileImageLink가 입력된 경우만 profileImageLink을 수정합니다.
+            if profileImageLink is not None:
+                reviewInstance.profileImageLink = profileImageLink
+            # nickname 또는 profileImageLink가 입력된 경우만 save 합니다.
+            if nickname is not None or profileImageLink is not None:
+                reviewInstance.save()
+
+        return super().partial_update(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        '''
+        user의 정보를 모두 변경 할 때 사용되는 API(전체 데이터 변경으로 사용될 일 없음)
+        + 테스트 용도로 만듦
+
+        ---
+        + 변경되는 nickname 또는 profileImageLink를 다른 테이블에서도 반영해 줍니다.
+        + 변경 필요한 테이블
+            + Review
+        '''
+
+        # update 될 입력된 데이터를 가져 옵니다.
+        data = request.data.dict()
+
+        # pk 값인 uid를 가져 옵니다.
+        uid = self.kwargs['pk']
+
+        # 입력된 데이터 중 nickname을 가져 옵니다.
+        nickname = data.get("nickname", None)
+        # 입력된 데이터 중 profileImageLink를 가져 옵니다.
+        profileImageLink = data.get("profileImageLink", None)
+
+        # Review를 uid 기준으로 조회하여 해당되는 인스턴스들을 쿼리셋을 받아옵니다.
+        reviewQuerySet = Review.objects.select_related("uid").filter(uid=uid)
+
+        # Review 테이블의 nickname과 profileImageLink를 변경 내용으로 업데이트 해줍니다.
+        for reviewInstance in reviewQuerySet:
+            reviewInstanceNickname = reviewInstance.nickname
+            reviewInstanceProfileImageLink = reviewInstance.profileImageLink
+            isChanged = False
+            # Review 테이블의 nickname과 입력된 nickname이 다르면 업데이트 해줍니다.
+            if nickname is not reviewInstanceNickname:
+                reviewInstance.nickname = nickname
+                isChanged = True
+            # Review 테이블의 profileImageLinke와 입력된 profileImageLinke가 다르면 업데이트 해줍니다.
+            if profileImageLink is not reviewInstanceProfileImageLink:
+                reviewInstance.profileImageLink = profileImageLink
+                isChanged = True
+            # 변경된 경우만 save 합니다.
+            if isChanged:
+                reviewInstance.save()
+
+        return super().update(request, *args, **kwargs)
 
 
 class StationViewSet(viewsets.ModelViewSet):
