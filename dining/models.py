@@ -77,8 +77,15 @@ class Review(models.Model):
     uid = models.ForeignKey(Users,
                             on_delete=models.CASCADE)
 
+    # nickname : 앱에서 사용할 nickname
+    nickname = models.CharField(max_length=50)
+
+    # profileImageLink : 카카오 프로필의 이미지 링크를 저장
+    profileImageLink = models.TextField()
+
     # created_at : 리뷰를 등록한 시점
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 
 # 식당에 대한 "좋아요" 선택 유무를 저장하는 테이블
