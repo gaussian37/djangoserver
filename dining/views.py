@@ -41,31 +41,47 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         음식 카테고리/역/정렬순 기준 해당 식당 리스트를 읽어오는 API
 
         ---
-        + parameters :
-            + `foodCategory` : 아래 리스트 중 한 개를 선택해야 합니다.
-                + 삼겹살, 소고기, 회/해산물, 족발/보쌈, 곱창, 스테이크, 이자카야, 맥주, 칵테일, 와인
-            + `station` : 지하철 역 이름을 선택해야 하고 끝에 **역은 생략** 합니다.
-                + 강남, 사당, 수원 ...
-            + `ordering`을 통하여 likeNum/reviewNum/searchNum/distFromStation 기준으로 조회합니다.
-                + **likeNum** : 좋아요 (내림차순, 기본값)
-                + **reviewNum** : 리뷰 갯수 (내림차순)
-                + **searchNum** : 조회수 (내림차순)
-                + **distFromStation** : 식당과 역과의 거리 (오름 차순)
-        + use cases :
-            + foodCategory=삼겹살, station=강남, ordering=likeNum
-            + foodCategory=곱창, station=사당, ordering=distFromStation
+        + foodCategory와 station 그리고 ordering(옵션)으로 식당을 조회
+            + parameters :
+                + `foodCategory` : 아래 리스트 중 한 개를 선택해야 합니다.
+                    + 삼겹살, 소고기, 회/해산물, 족발/보쌈, 곱창, 스테이크, 이자카야, 맥주, 칵테일, 와인
+                + `station` : 지하철 역 이름을 선택해야 하고 끝에 **역은 생략** 합니다.
+                    + 강남, 사당, 수원 ...
+                + `ordering`을 통하여 likeNum/reviewNum/searchNum/distFromStation 기준으로 조회합니다.
+                    + **likeNum** : 좋아요 (내림차순, 기본값)
+                    + **reviewNum** : 리뷰 갯수 (내림차순)
+                    + **searchNum** : 조회수 (내림차순)
+                    + **distFromStation** : 식당과 역과의 거리 (오름 차순)
+            + use cases :
+                + foodCategory=삼겹살, station=강남, ordering=likeNum
+                + foodCategory=곱창, station=사당, ordering=distFromStation
+                
+        + foodCategory와 station 그리고 restaurantName으로 식당을 조회
+            + parameters : 
+                + `foodCategory` : 아래 리스트 중 한 개를 선택해야 합니다.
+                + `station` : 지하철 역 이름을 선택해야 하고 끝에 **역은 생략** 합니다.
+                + `restaurantName` : 식당 이름을 직접 검색합니다. 이름 중 일부만 검색 가능합니다.
+            + use cases :
+                + foodCategory=삼겹살, station=강남, restaurantName=무한리필                
         '''
 
         # foodCategory 파라미터, 조회 결과 없을 시 None 리턴
         foodCategory = request.GET.get("foodCategory", None)
         # station 파라미터, 조회 결과 없을 시 None 리턴
         station = request.GET.get("station", None)
-        # ordering 파라미터, 조회 결과 없을 시
+        # ordering 파라미터, 조회 결과 없을 시 None 리턴
         ordering = request.GET.get("ordering", "likeNum")
+        # restaurantName 파라미터, 조회 결과 없을 시 None 리턴
+        restaurantName = request.GET.get("restaurantName", None)
+
+        # foodCategory와 station 그리고 restaurantName을 모두 받았을 경우 :
+        if foodCategory is not None and station is not None and restaurantName is not None:
+            self.queryset = self.queryset.filter(foodCategory=foodCategory, station=station,
+                                                 restaurantName__contains=restaurantName)
 
         # foodCategory와 station 모두 값을 받았을 경우 :
         # foodCategory와 station을 기준으로 조회한 후 결과를 return 한다.
-        if foodCategory is not None and station is not None:
+        elif foodCategory is not None and station is not None:
 
             # foodCategory와 station을 기준으로 query를 filter한 결과를 받습니다.
             self.queryset = self.queryset.filter(foodCategory=foodCategory, station=station)
