@@ -59,6 +59,7 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         + foodCategory와 station 그리고 restaurantName으로 식당을 조회
             + parameters : 
                 + `foodCategory` : 아래 리스트 중 한 개를 선택해야 합니다.
+                    + 삼겹살, 소고기, 회/해산물, 족발/보쌈, 곱창, 스테이크, 이자카야, 맥주, 칵테일, 와인
                 + `station` : 지하철 역 이름을 선택해야 하고 끝에 **역은 생략** 합니다.
                 + `restaurantName` : 식당 이름을 직접 검색합니다. 이름 중 일부만 검색 가능합니다.
             + use cases :
@@ -75,8 +76,8 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         restaurantName = request.GET.get("restaurantName", None)
 
         # foodCategory와 station 그리고 restaurantName을 모두 받았을 경우 :
-        if foodCategory is not None and station is not None and restaurantName is not None:
-            self.queryset = self.queryset.filter(foodCategory=foodCategory, station=station,
+        if foodCategory is not None and restaurantName is not None:
+            self.queryset = self.queryset.filter(foodCategory=foodCategory,
                                                  restaurantName__contains=restaurantName)
 
         # foodCategory와 station 모두 값을 받았을 경우 :
