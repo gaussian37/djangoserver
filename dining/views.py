@@ -630,8 +630,8 @@ class StationViewSet(viewsets.ModelViewSet):
             for q in self.queryset:
                 distance = distByTwoPoints(latitude, longitude, q.latitude, q.longitude)
                 # 거리가 5,000m가 넘는 식당은 제외합니다.
-                if distance < 5000:
-                    stationListWithDistance.append((distance, q.station))
+                # if distance < 5000:
+                stationListWithDistance.append((distance, q.station))
 
             # distance 오름 차순으로 정렬
             stationListWithDistance = sorted(stationListWithDistance)
