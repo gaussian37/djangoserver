@@ -63,7 +63,13 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
                 + `station` : 지하철 역 이름을 선택해야 하고 끝에 **역은 생략** 합니다.
                 + `restaurantName` : 식당 이름을 직접 검색합니다. 이름 중 일부만 검색 가능합니다.
             + use cases :
-                + foodCategory=삼겹살, station=강남, restaurantName=무한리필                
+                + foodCategory=삼겹살, station=강남, restaurantName=무한리필
+
+        + uid로 식당을 조회
+            + parameter :
+                + `uid` : 등록한 사용자의 uid를 입력합니다.
+            + use cases :
+                + uid=123
         '''
 
         # foodCategory 파라미터, 조회 결과 없을 시 None 리턴
@@ -74,6 +80,8 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         ordering = request.GET.get("ordering", "likeNum")
         # restaurantName 파라미터, 조회 결과 없을 시 None 리턴
         restaurantName = request.GET.get("restaurantName", None)
+        # uid 파라미터, 조회 결과 없을 시 None 리턴
+        uid = request.GET.get("uid", None)
 
         # foodCategory와 station 그리고 restaurantName을 모두 받았을 경우 :
         if foodCategory is not None and restaurantName is not None:
@@ -94,6 +102,10 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
             else :
                 # 거리 이외의 정렬 기준은 내림차순으로 정렬해야 합니다.
                 self.queryset = self.queryset.order_by("-" + ordering, "-id")
+
+        # uid를 받은 경우 uid를 기준으로 조회한 후 결과를 return 합니다.
+        elif uid is not None :
+            self.queryset = self.queryset.filter(uid=uid)
 
         return super().list(request, *args, **kwargs)
 
@@ -251,6 +263,12 @@ class LikeViewSet(viewsets.ModelViewSet):
             + uid='123', restaurant-id=1 이면 '123' 사용자가 식당 1에 좋아요를 눌렀으면 `result`에 결과가 반환됩니다.
             + 만약 좋아요를 누르지 않았다면 빈 리스트가 반환됩니다.
             + 좋아요를 누를 때/취소할 때, 어떤 사용자의 어떤 식당에 대한 좋아요 상태를 체크해야 정보가 동기화 됩니다.
+
+        <br>
+        + parameters :
+            + `uid` : 사용자의 uid를 입력합니다. (**필수**)
+        + use cases :
+            + uid='123' 이면 123 유저가 등록한 좋아요 리스트를 반환합니다.
         '''
 
         # uid 파라미터, 조회 결과 없을 시 None 리턴
@@ -261,6 +279,8 @@ class LikeViewSet(viewsets.ModelViewSet):
 
         if uid is not None and restaurant_id is not None:
             self.queryset = self.queryset.filter(uid=uid, restaurant=restaurant_id)
+        elif uid is not None:
+            self.queryset = self.queryset.filter(uid=uid)
 
         return super().list(request, *args, **kwargs)
 
