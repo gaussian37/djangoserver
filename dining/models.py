@@ -112,7 +112,9 @@ class Image(models.Model):
                                    on_delete=models.CASCADE)
 
     # restaurant에 대한 foreign key
-    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    review = models.ForeignKey(Review,
+                               related_name="reviewImages",
+                               on_delete=models.CASCADE)
 
     # uid : 등록한 사용자 구분 목적
     uid = models.ForeignKey(Users,  on_delete=models.CASCADE)

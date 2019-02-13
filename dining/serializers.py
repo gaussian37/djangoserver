@@ -31,9 +31,11 @@ class LikeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ReviewSerializer(serializers.ModelSerializer):
+    reviewImages = ImageSerializer(many=True, read_only=True)
+
     class Meta:
         model = Review
-        fields = ('id', 'restaurant', 'content', 'created_at', 'uid', 'nickname', 'profileImageLink')
+        fields = ('id', 'restaurant', 'content', 'created_at', 'uid', 'nickname', 'profileImageLink', 'reviewImages')
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
