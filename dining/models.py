@@ -77,12 +77,6 @@ class Review(models.Model):
     uid = models.ForeignKey(Users,
                             on_delete=models.CASCADE)
 
-    # nickname : 앱에서 사용할 nickname
-    nickname = models.CharField(max_length=50)
-
-    # profileImageLink : 카카오 프로필의 이미지 링크를 저장
-    profileImageLink = models.TextField()
-
     # created_at : 리뷰를 등록한 시점
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -111,13 +105,14 @@ class Image(models.Model):
                                    related_name="images",
                                    on_delete=models.CASCADE)
 
-    # restaurant에 대한 foreign key
+    # review에 대한 foreign key
     review = models.ForeignKey(Review,
                                related_name="reviewImages",
                                on_delete=models.CASCADE)
 
     # uid : 등록한 사용자 구분 목적
-    uid = models.ForeignKey(Users,  on_delete=models.CASCADE)
+    uid = models.ForeignKey(Users,
+                            on_delete=models.CASCADE)
 
     ## option field
 

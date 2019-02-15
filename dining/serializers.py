@@ -35,7 +35,13 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = ('id', 'restaurant', 'content', 'created_at', 'uid', 'nickname', 'profileImageLink', 'reviewImages')
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['users'] = UsersSerializer(instance.uid).data
+        return response
+
 
 class StationSerializer(serializers.ModelSerializer):
     class Meta:
