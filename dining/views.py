@@ -463,7 +463,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
             + `uid` : 리뷰 작성자의 uid를 입력합니다. (**필수**)
             + `restaurant` : 식당 id를 입력합니다. (**필수**)
         + 리뷰 생성 시 해당 Restaurant의 reviewNum을 +1 합니다.
-        + 리뷰 생성 시 nickname과 profileImageLink를 서버에서 자동으로 입력합니다.
         '''
         # 입력 받은 데이터 접근
         data = request.data.dict()
@@ -471,15 +470,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         restaurant = Restaurant.objects.get(id = data["restaurant"])
         # 할당 받은 Restaurant의 reviewNum을 +1 해줍니다.
         self.setRestaurantreviewNum(restaurant, 1)
-
-        # Review 등록 시, Review의 nickname과 profileImage는 User 테이블에서 조회해서 저장합니다.
-        user = Users.objects.get(uid = data["uid"])
-
-        # request.data를 변경 가능하도록 만듭니다.
-        request.POST._mutable = True
-        # Review 테이블의 필드인 nickname과 profileImageLink 를 현재 Users 테이블에서 조회한 결과로 입력해 줍니다.
-        request.POST['nickname'] = user.nickname
-        request.POST['profileImageLink'] = user.profileImageLink
 
         return super().create(request, *args, **kwargs)
 
@@ -513,30 +503,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def setRestaurantreviewNum(self, restaurant, offset):
         restaurant.reviewNum += offset
         restaurant.save()
-
-    def updateNicknameProfileImageLink(self, qs):
-
-        # 입력 받은 리뷰 queryset를 순회합니다.
-        for q in qs:
-            # 업데이트 여부를 확인하는 flag
-            isUpdated = False
-
-            # 리뷰 쿼리는 FK로 uid를 가지고 있으므로 각 쿼리의 uid를 받습니다.
-            uid = q.uid
-            # 만약 FK로 접근한 uid의 nickname과 현재 리뷰에 저장된 nickname이 다를 경우
-            # FK로 접근한 uid의 nickname으로 갱신해 줍니다.
-            if uid.nickname is not q.nickname:
-                q.nickname = uid.nickname
-                isUpdated = True
-
-            # 만약 FK로 접근한 uid의 profileImageLink과 현재 리뷰에 저장된 profileImageLink이 다를 경우
-            # FK로 접근한 uid의 profileImageLink으로 갱신해 줍니다.
-            if uid.nickname is not q.nickname:
-                q.profileImageLink = uid.profileImageLink
-                isUpdated = True
-
-            if isUpdated:
-                q.save()
 
 
 class UsersViewSet(viewsets.ModelViewSet):
