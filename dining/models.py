@@ -14,8 +14,8 @@ class Users(models.Model):
     # nickname : 앱에서 사용할 nickname
     nickname = models.CharField(max_length=50)
 
-    # profileImageLink : 카카오 프로필의 이미지 링크를 저장
-    profileImageLink = models.TextField()
+    # profileImageLink : 카카오 프로필의 이미지 저장
+    profileImageLink = models.ImageField(upload_to="profile/%Y/%m/%d")
 
     ## Non requred field
 
