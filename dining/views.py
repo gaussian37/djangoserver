@@ -589,6 +589,14 @@ class StationViewSet(viewsets.ModelViewSet):
             + `returnNum` : 리턴해 줄 가장 가까운 역의 갯수. (기본값 = 3)
         + returns :
             +  입력 받은 GPS 기준 가장 가까운 역을 returnNum의 갯수 만큼 return 합니다.
+
+        <br>
+
+        + parameters :
+            + `station` : 역 이름을 입력합니댜 (**필수**) 역 이름 입력 시 마지막에 역은 생략 합니다.
+                + 예 : 서울(O), 서울역(X). 강남(O), 강남역(X)
+        + returns :
+            + 입력 받은 역의 위도와 경도를 return 합니다.
         '''
 
         # 입력 받은 latitude를 float 형으로 변환
@@ -606,9 +614,13 @@ class StationViewSet(viewsets.ModelViewSet):
         if returnNum is not None:
             returnNum = int(returnNum)
 
-        # 조회 결과를 저장할 빈 쿼리셋
-        queryset = Station.objects.filter(station="")
+        # 입력 받은 station을 int 형으로 변환
+        station = request.GET.get("station", None)
+
+
         if latitude is not None and longitude is not None:
+            # 조회 결과를 저장할 빈 쿼리셋
+            queryset = Station.objects.filter(station="")
             # (식당과의 거리, 역 이름) 형태로 리스트에 저장합니다.
             stationListWithDistance = []
 
@@ -628,10 +640,10 @@ class StationViewSet(viewsets.ModelViewSet):
             # 이 때 distance도 갱신합니다.
             for stationWithDistance in stationListWithDistance:
                 distance = stationWithDistance[0]
-                station = stationWithDistance[1]
+                __station = stationWithDistance[1]
 
                 # station으로 조회된 Queryset을 가져옵니다.
-                filteredQueryset = self.queryset.filter(station=station)
+                filteredQueryset = self.queryset.filter(station=__station)
 
                 # 조회한 station의 distance를 업데이트 하고 저장합니다.
                 q = filteredQueryset.first()
@@ -643,6 +655,11 @@ class StationViewSet(viewsets.ModelViewSet):
 
             # 식당과 역과의 거리를 오름차순으로 정렬하여 반환합니다.
             self.queryset = queryset.order_by("distFromStation")
+
+        # station을 입력 받은 경우 station을 기준으로 리턴해줍니다.
+        elif station is not None:
+            self.queryset = self.queryset.filter(station=station)
+
 
         return super().list(request, *args, **kwargs)
 
