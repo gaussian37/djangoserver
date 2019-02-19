@@ -14,10 +14,10 @@ class Users(models.Model):
     # nickname : 앱에서 사용할 nickname
     nickname = models.CharField(max_length=50)
 
+    ## Non requred field
+
     # profileImageLink : 카카오 프로필의 이미지 저장
     profileImageLink = models.ImageField(upload_to="profile/%Y/%m/%d", blank=True)
-
-    ## Non requred field
 
     # likeNum
     createdLikeNum = models.IntegerField(blank=True, default=0)
