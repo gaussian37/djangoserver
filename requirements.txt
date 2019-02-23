@@ -10,8 +10,9 @@ djangorestframework-jwt
 django-debug-toolbar
 numpy
 tensorflow
-keras
+keras==2.2.4
+opencv-python<=3.4.2
 haversine
 drf-yasg
 ipython==7.0.1
-pymysql
+mysqlclient
