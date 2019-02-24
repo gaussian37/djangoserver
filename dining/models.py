@@ -2,6 +2,7 @@
 from django.db import models
 from .utils import dist
 from .media_directory import *
+from django.db import models
 
 
 # User 정보 테이블
@@ -121,6 +122,7 @@ class Image(models.Model):
 
     # created_at : 등록한 시점
     created_at = models.DateTimeField(auto_now_add=True)
+
 
 class Station(models.Model):
     ## required fields
