@@ -367,14 +367,19 @@ class ImageViewSet(viewsets.ModelViewSet):
             + restaurant-id : 식당 id에 해당하는 전체 이미지 리스트를 조회 (**restaurant-id 또는 review-id 하나 필수**)
             + review-id : 리뷰 id에 해당하는 전체 이미지 리스트를 조회 (**restaurant-id 또는 review-id 하나 필수**)
             + restaurant-id 와 review-id 동시에 입력 시 교집합 조회
+        + parameters :
+            + restaurant-id 와 category 동시에 입력 시 교집합 조회
         '''
         # restaurant-id 파라미터, 조회 결과 없을 시 None 리턴
         restaurant_id = request.GET.get("restaurant-id", None)
         review_id = request.GET.get("review-id", None)
+        category = request.GET.get("category", None)
 
         if restaurant_id is not None and review_id is not None:
             self.queryset = self.queryset.filter(restaurant=restaurant_id, review=review_id)
-        if restaurant_id is not None:
+        elif restaurant_id is not None and category is not None:
+            self.queryset = self.queryset.filter(restaurant=restaurant_id, category=category)
+        elif restaurant_id is not None:
             self.queryset = self.queryset.filter(restaurant=restaurant_id)
         elif review_id is not None:
             self.queryset = self.queryset.filter(review=review_id)
