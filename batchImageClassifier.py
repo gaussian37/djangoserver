@@ -44,7 +44,7 @@ while(1):
     # 만약 식당의 대표이미지가 없다면 첫 등록된 음식 이미지를 식당 대표이미지로 지정합니다.
     for image in images:
         # 저장된 이미의 경로를 가져옵니다.
-        fname = 'media/' + image.image.name
+        fname = '/home/bluemen/djangoserver/media/' + image.image.name
         # opencv로 이미지를 읽어 옵니다.
         img = cv2.imread(fname)
         # 만약 img가 불러오지 못한다면 무시합니다.
@@ -67,8 +67,7 @@ while(1):
 
         # 분류한 이미지가 음식(0)이고 식당의 대표이미지가 없다면 대표이미지로 설정합니다.
         restaurantInstance = image.restaurant
-        if resultIndex==0 and restaurantInstance.representativeImage == '' :
-            print("!!")
+        if resultIndex==0 and restaurantInstance.representativeImage == "":
             restaurantInstance.representativeImage = baseUrl + image.image.url
             # 작업한 내용을 db에 저장합니다.
             restaurantInstance.save()        
