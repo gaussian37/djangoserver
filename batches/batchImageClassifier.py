@@ -44,7 +44,7 @@ while(1):
     # 만약 식당의 대표이미지가 없다면 첫 등록된 음식 이미지를 식당 대표이미지로 지정합니다.
     for image in images:
         # 저장된 이미의 경로를 가져옵니다.
-        fname = '/home/bluemen/djangoserver/media/' + image.image.name
+        fname = 'media/' + image.image.name
         # opencv로 이미지를 읽어 옵니다.
         img = cv2.imread(fname)
         # 만약 img가 불러오지 못한다면 무시합니다.
