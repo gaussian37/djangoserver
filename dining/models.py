@@ -19,7 +19,7 @@ class Users(models.Model):
 
     # profileImageLink : 카카오 프로필의 이미지 저장
     profileImageLink = models.ImageField(upload_to="profile/%Y/%m/%d",
-                                         default="http://bluemen.pythonanywhere.com/media/profile/defaultProfile.jpg",
+                                         default="profile/defaultProfile.jpg",
                                          blank=True)
 
     # likeNum
