@@ -174,6 +174,14 @@ class RestaurantViewSet(viewsets.ModelViewSet, generics.ListAPIView):
         # request.data에 식당과 역까지의 거리 입력합니다.
         request.POST['distFromStation'] = distFromStation
 
+        # 입력 받은 데이터에서 uid를 가져옵니다.
+        __uid = data["uid"]
+        # uid를 이용하여 식당을 등록하는 사용자의 정보를 가져옵니다.
+        registerUser = Users.objects.filter(uid=__uid).first()
+        # 식당 등록 시 User의 Score를 +10점 합니다.
+        registerUser.score += 10
+        registerUser.save()
+
         return super().create(request, *args, **kwargs)
 
     def saveLikeReviewNum(self, restaurnatObject, mode="all"):
@@ -293,6 +301,7 @@ class LikeViewSet(viewsets.ModelViewSet):
             + `uid` : 사용자의 uid를 입력합니다. (**필수**)
             + `restaurant` : 식당 id를 입력 합니다. (**필수**)
         + create 시 해당 restaurant의 likeNum을 +1 합니다.
+        + create 시 해당 User의 Score를 +1 합니다.
         '''
         # 입력 받은 데이터 접근
         data = request.data.dict()
@@ -300,6 +309,14 @@ class LikeViewSet(viewsets.ModelViewSet):
         restaurant = Restaurant.objects.get(id = data["restaurant"])
         # 할당 받은 Restaurant의 likeNum을 +1 해줍니다.
         self.setRestaurantLikeNum(restaurant, 1)
+
+        # 입력 받은 데이터에서 uid를 가져옵니다.
+        __uid = data["uid"]
+        # uid를 이용하여 Like를 등록하는 사용자의 정보를 가져옵니다.
+        registerUser = Users.objects.filter(uid=__uid).first()
+        # Like 등록 시 User의 Score를 +1점 합니다.
+        registerUser.score += 1
+        registerUser.save()
 
         return super().create(request, *args, **kwargs)
 
@@ -316,6 +333,7 @@ class LikeViewSet(viewsets.ModelViewSet):
             + `id` : 좋아요 id (**필수**)
         + 좋아요를 취소할 때에는 반드시 좋아요를 하였는지 먼저 확인이 필요 합니다.
         + 좋아요를 취소하면 해당 식당의 likeNum이 -1 됩니다.
+        + 좋아요를 취소할 때 해당 유저의 score를 -1합니다.
         '''
         # 삭제 할 instance의 pk값을 구합니다.
         pk = self.kwargs['pk']
@@ -325,6 +343,16 @@ class LikeViewSet(viewsets.ModelViewSet):
         restaurant = q.restaurant
         # 할당 받은 Restaurant의 likeNum을 -1 해줍니다.
         self.setRestaurantLikeNum(restaurant, -1)
+
+        # 입력 받은 데이터 접근
+        data = request.data.dict()
+        # 입력 받은 데이터에서 uid를 가져옵니다.
+        __uid = data["uid"]
+        # uid를 이용하여 Like를 취소 시 사용자의 정보를 가져옵니다.
+        registerUser = Users.objects.filter(uid=__uid).first()
+        # Like 취소 시 User의 Score를 +1점 합니다.
+        registerUser.score -= 1
+        registerUser.save()
 
         return super().destroy(request, *args, **kwargs)
 
@@ -387,6 +415,21 @@ class ImageViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
 
+    def create(self, request, *args, **kwargs):
+
+        # 입력 받은 데이터 접근
+        data = request.data.dict()
+        # 입력 받은 데이터에서 uid를 가져옵니다.
+        __uid = data["uid"]
+        # uid를 이용하여 Like를 취소 시 사용자의 정보를 가져옵니다.
+        registerUser = Users.objects.filter(uid=__uid).first()
+        # Like 취소 시 User의 Score를 +1점 합니다.
+        registerUser.score += 3
+        registerUser.save()
+
+        return super().create(request, *args, **kwargs)
+
+
     def destroy(self, request, *args, **kwargs):
         '''
         특정 사진을 제거하는 API
@@ -409,7 +452,6 @@ class ImageViewSet(viewsets.ModelViewSet):
         restaurant = Restaurant.objects.get(id=restaurant_id)
 
         # 현재 제거하려하는 이미지가 대표 이미지라면 Restaurant instance에서 대표 이미지를 삭제합니다.
-        print(restaurant.representativeImage)
         if image_url == restaurant.representativeImage:
             restaurant.representativeImage = ""
             restaurant.save()
@@ -475,6 +517,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
         restaurant = Restaurant.objects.get(id = data["restaurant"])
         # 할당 받은 Restaurant의 reviewNum을 +1 해줍니다.
         self.setRestaurantreviewNum(restaurant, 1)
+
+        # 입력 받은 데이터에서 uid를 가져옵니다.
+        __uid = data["uid"]
+        # uid를 이용하여 식당을 등록하는 사용자의 정보를 가져옵니다.
+        registerUser = Users.objects.filter(uid=__uid).first()
+        # 식당 등록 시 User의 Score를 +10점 합니다.
+        registerUser.score += 5
+        registerUser.save()
 
         return super().create(request, *args, **kwargs)
 
