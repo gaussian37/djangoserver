@@ -27,7 +27,7 @@ from django.urls import reverse
 from dining.utils import *
 import requests
 
-diningBaseUrl = "http://gaussian37.pythonanywhere.com/dining/v1/"
+diningBaseUrl = "http://bluemen.pythonanywhere.com/dining/v1/"
 
 # stationDict를 통하여 역 이름과 GPS 정보를 가져 옵니다.
 for item in stationDict.items():
