@@ -344,10 +344,8 @@ class LikeViewSet(viewsets.ModelViewSet):
         # 할당 받은 Restaurant의 likeNum을 -1 해줍니다.
         self.setRestaurantLikeNum(restaurant, -1)
 
-        # 입력 받은 데이터 접근
-        data = request.data.dict()
-        # 입력 받은 데이터에서 uid를 가져옵니다.
-        __uid = data["uid"]
+        # 삭제할 Like의 uid를 가져옵니다.
+        __uid = q.uid.uid
         # uid를 이용하여 Like를 취소 시 사용자의 정보를 가져옵니다.
         registerUser = Users.objects.filter(uid=__uid).first()
         # Like 취소 시 User의 Score를 +1점 합니다.
