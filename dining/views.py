@@ -521,7 +521,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
         # 입력 받은 데이터 중 restaurnat(식당 id)를 이용하여 Restaurant Object 확인
         restaurant = Restaurant.objects.get(id = data["restaurant"])
         # 할당 받은 Restaurant의 reviewNum을 +1 해줍니다.
-        self.setRestaurantreviewNum(restaurant, 1)
+        restaurant.reviewNum += 1
+        # 할당 받은 Restaurant의 searchNum을 -1 해줍니다.(페이지 동기화를 위해 새로고침 할 때 발생하는 +1을 방지하기 위한 목적)
+        restaurant.searchNum += -1
+        restaurant.save()
 
         # 입력 받은 데이터에서 uid를 가져옵니다.
         __uid = data["uid"]
@@ -550,19 +553,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
         # Restaurant object 를 할당합니다.
         restaurant = q.restaurant
         # 할당 받은 Restaurant의 reviewNum을 -1 해줍니다.
-        self.setRestaurantreviewNum(restaurant, -1)
+        restaurant.reviewNum += -1
+        restaurant.save()
 
         return super().destroy(request, *args, **kwargs)
-
-
-    '''
-    - Review를 create/destroy 할 때, 해당하는 Restaurant의 reviewNum을 update(+1/-1) 해주는 함수
-    - restaurant : restaurant object
-    - offset : +1 / -1
-    '''
-    def setRestaurantreviewNum(self, restaurant, offset):
-        restaurant.reviewNum += offset
-        restaurant.save()
 
 
 class UsersViewSet(viewsets.ModelViewSet):
