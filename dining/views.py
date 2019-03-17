@@ -558,7 +558,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
         # 삭제할 review의 uid를 가져옵니다.
         uid = q.uid.uid
+        # uid를 이용하여 Review를 취소 시 사용자의 정보를 가져옵니다.
         registerUser = Users.objects.filter(uid=uid).first()
+        # Review 취소 시 User의 Score를 -5점 합니다.
         registerUser.score -= 5
         registerUser.save()
 
