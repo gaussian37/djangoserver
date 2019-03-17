@@ -556,6 +556,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
         restaurant.reviewNum += -1
         restaurant.save()
 
+        # 삭제할 review의 uid를 가져옵니다.
+        uid = q.uid.uid
+        registerUser = Users.objects.filter(uid=uid).first()
+        registerUser.score -= 5
+        registerUser.save()
+
         return super().destroy(request, *args, **kwargs)
 
 
